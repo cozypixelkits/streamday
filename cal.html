@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stream Day · Calendar</title>
+<style>@font-face{font-family:N;font-weight:800;src:url(nunito-latin-800-normal.woff2)}@font-face{font-family:PXB;src:url(silkscreen-latin-700-normal.woff2)}
+body{margin:0;background:#FFF2F4;color:#4A2B3A;font-family:N,system-ui,sans-serif;font-weight:800;text-align:center;padding:40px 20px}
+img{width:120px;image-rendering:pixelated}h1{font-family:PXB;font-weight:400;font-size:22px;margin:10px 0}
+p{font-size:16px;line-height:1.45;opacity:.85;max-width:380px;margin:8px auto}
+a.b{display:inline-block;margin-top:18px;background:#F0668A;color:#fff;text-decoration:none;font-family:PXB;font-size:17px;padding:16px 26px;border-radius:14px;box-shadow:0 4px 0 #C2456A}
+ul{list-style:none;padding:0;margin:16px auto;max-width:360px;text-align:left}li{background:#fff;border-radius:12px;padding:10px 14px;margin:6px 0;font-size:15px}</style></head>
+<body><img src="img/mochi_happy.png" alt=""><h1>STREAM DAY</h1><div id="c"></div>
+<script>
+const pad=n=>String(n).padStart(2,"0"),D=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],BY=["SU","MO","TU","WE","TH","FR","SA"];
+function t12(t){let h=+t.slice(0,2),m=+t.slice(2);const a=h>=12?"PM":"AM";h=h%12||12;return h+(m?":"+pad(m):"")+" "+a}
+let data;try{data=JSON.parse(decodeURIComponent(location.hash.slice(1)))}catch(e){}
+const c=document.getElementById("c");
+if(data&&/^(mochi|maple|pip|cocoa)$/.test(data.c||"")){document.querySelector("img").src="img/"+data.c+"_happy.png";}
+if(!data||!data.r||!data.r.length){c.innerHTML="<p>Open this page from the Stream Day app (Week › Add schedule to my calendar).</p>"}
+else{
+ const now=new Date(),st=now.toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
+ const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00";
+ const ev=data.r.map((r,i)=>{const [d,t,len,...g]=r.split(",");const game=g.join(",");const s=new Date();s.setHours(+t.slice(0,2),+t.slice(2),0,0);while(s.getDay()!=+d||s<now)s.setDate(s.getDate()+1);const e=new Date(s.getTime()+(+len)*6e4);
+  return ["BEGIN:VEVENT","UID:streamday-"+i+"-"+d+t+"@cozypixelkits","DTSTAMP:"+st,"DTSTART:"+f(s),"DTEND:"+f(e),"RRULE:FREQ=WEEKLY;BYDAY="+BY[+d],"SUMMARY:🔴 Stream"+(data.n?" · "+data.n:"")+(game?" · "+game:""),"DESCRIPTION:Open Stream Day and run your go-live checklist.","BEGIN:VALARM","TRIGGER:-PT30M","ACTION:DISPLAY","DESCRIPTION:Stream in 30 minutes","END:VALARM","END:VEVENT"].join("\r\n")});
+ const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//CozyPixelKits//Stream Day//EN","CALSCALE:GREGORIAN",...ev,"END:VCALENDAR"].join("\r\n");
+ const url="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);
+ c.innerHTML="<p>Your weekly streams, each with a reminder 30 minutes before:</p><ul>"+data.r.map(r=>{const [d,t,len,...g]=r.split(",");return "<li>Every "+D[+d]+" · "+t12(t)+(g.join(",")?" · "+g.join(",").replace(/</g,"&lt;"):"")+"</li>"}).join("")+"</ul><a class='b' href='"+url+"' download='stream-schedule.ics'>Add to Calendar</a><p style='font-size:14px;margin-top:18px'>Then tap <b>Add All</b>. You can close this page after.</p>";
+}
+</script></body></html>

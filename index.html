@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stream Day</title>
+<meta name="description" content="A cozy go-live companion for streamers: checklist, schedule, goals, raid list and income.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Stream Day">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFF2F4">
+<style>
+@font-face{font-family:PX;src:url(silkscreen-latin-400-normal.woff2) format("woff2");font-display:swap}
+@font-face{font-family:PXB;src:url(silkscreen-latin-700-normal.woff2) format("woff2");font-display:swap}
+@font-face{font-family:N;font-weight:600;src:url(nunito-latin-600-normal.woff2) format("woff2");font-display:swap}
+@font-face{font-family:N;font-weight:800;src:url(nunito-latin-800-normal.woff2) format("woff2");font-display:swap}
+:root{--bg:#FFF2F4;--ink:#4A2B3A;--mute:#8E6F7D;--ac:#F0668A;--acd:#C2456A;--on:#fff;--card:#fff;--sh:#F3C6D2;--soft:#FFE3EA;--line:#F6D9E1;--nav:#fff;--live:#E53950}
+body[data-c=maple]{--bg:#1D1A2F;--ink:#FFF4E6;--mute:#B7A9C2;--ac:#FF8A3D;--acd:#C7611F;--on:#2A1405;--card:#2A2643;--sh:#14121F;--soft:#3A3150;--line:#3A3556;--nav:#15131F}
+body[data-c=pip]{--bg:#EEF7E8;--ink:#2E3B25;--mute:#6E7F62;--ac:#4FA03E;--acd:#3A7A2C;--on:#fff;--card:#fff;--sh:#CFE6C2;--soft:#DCF0CF;--line:#DDEBD3;--nav:#fff}
+body[data-c=cocoa]{--bg:#FBF1E1;--ink:#4A2E1E;--mute:#8D7160;--ac:#B8642E;--acd:#8C4519;--on:#fff;--card:#fff;--sh:#EBD5B5;--soft:#F5E2C6;--line:#F0DFC6;--nav:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:N,system-ui,sans-serif;font-weight:600}
+body{min-height:100dvh;transition:background .3s}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.wrap{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 100px)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font-family:PXB;font-size:20px;letter-spacing:1px}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:var(--card);display:grid;place-items:center;box-shadow:0 3px 0 var(--sh)}
+.iconbtn svg{width:20px;height:20px}
+.card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 4px 0 var(--sh);margin-bottom:14px}
+h4{margin:0 0 10px;font-family:PX;font-size:12px;letter-spacing:.5px;color:var(--mute);font-weight:400;display:flex;justify-content:space-between;align-items:center;gap:8px}
+h4 button{font-family:N;font-weight:800;font-size:13px;color:var(--ac);letter-spacing:0}
+h2{font-family:PXB;font-size:18px;margin:0 0 4px;font-weight:400;letter-spacing:.5px}
+.sub{color:var(--mute);font-size:14px;margin:0}
+.hero{display:flex;gap:12px;align-items:center;background:linear-gradient(var(--soft),var(--card))}
+.buddy{width:112px;height:112px;flex:none;animation:bob 1.6s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.bub{background:var(--bg);border-radius:14px;padding:10px 12px;font-weight:800;font-size:15px;line-height:1.3;position:relative;flex:1;min-width:0}
+.bub:before{content:"";position:absolute;left:-8px;top:24px;border:8px solid transparent;border-right-color:var(--bg);border-left:0}
+.bub small{display:block;font-weight:600;font-size:12.5px;color:var(--mute);margin-top:4px}
+.ck{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;padding:9px 0;border-bottom:1px dashed var(--line);width:100%;text-align:left}
+.ck:last-child{border:0}
+.box{width:24px;height:24px;border:3px solid var(--ink);border-radius:5px;flex:none;display:grid;place-items:center;color:var(--on)}
+.box svg{width:14px;height:14px;opacity:0}
+.ck.d .box{background:var(--ac);border-color:var(--ac)}.ck.d .box svg{opacity:1}
+.ck.d .t{opacity:.5;text-decoration:line-through}
+.ck .t{flex:1;min-width:0}
+.ck em{font-style:normal;font-size:12px;color:var(--mute);font-weight:600}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;font-family:PXB;font-size:16px;letter-spacing:.5px;padding:14px 16px;border-radius:14px;background:var(--ac);color:var(--on);box-shadow:0 4px 0 var(--acd);width:100%;font-weight:400;text-decoration:none}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--acd)}
+.btn.go{font-size:22px;padding:18px}
+.btn.ghost{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--sh);font-family:N;font-weight:800;font-size:15px;letter-spacing:0}
+.btn.sm{font-size:14px;padding:10px 12px;width:auto}
+.btn.live{background:var(--live);box-shadow:0 4px 0 #A8203A;color:#fff}
+.row{display:flex;gap:12px}.row>*{flex:1}
+.stat{text-align:center;margin-bottom:14px}
+.big{font-family:PXB;font-size:24px;color:var(--ac);display:block;line-height:1.2}
+.lbl{font-size:12.5px;color:var(--mute)}
+.livebox{text-align:center;padding:18px 14px}
+.dot{display:inline-block;width:12px;height:12px;background:var(--live);border-radius:2px;animation:blink 1s steps(2) infinite;margin-right:8px;vertical-align:1px}
+@keyframes blink{50%{opacity:.2}}
+.timer{font-family:PXB;font-size:40px;letter-spacing:2px;margin:6px 0 2px}
+.gl{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
+.gl b{width:108px;font-size:14px;font-weight:800}
+.bar{flex:1;height:16px;background:var(--bg);border-radius:4px;display:flex;gap:2px;padding:3px}
+.bar i{flex:1;background:var(--line);border-radius:1px}.bar i.fl{background:var(--ac)}
+.gl span{min-width:62px;text-align:right;font-family:PX;font-size:11px}
+.gl.ok span{color:var(--ac)}
+.aff{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.aff img{width:56px;height:56px}
+.aff p{margin:0;font-weight:800;font-size:17px;line-height:1.25}.aff p small{display:block;font-weight:600;font-size:12.5px;color:var(--mute)}
+.wk{display:flex;justify-content:space-between;gap:4px}
+.wk div{flex:1;text-align:center;font-family:PX;font-size:11px;padding:8px 0;border-radius:10px;background:var(--bg);min-height:52px}
+.wk div.l{background:var(--ac);color:var(--on)}
+.wk div.done{outline:2px solid var(--ac);outline-offset:-2px}
+.wk div.td{text-decoration:underline;text-underline-offset:3px}
+.wk div b{display:block;font-family:N;font-weight:800;font-size:12px;margin-top:5px}
+.li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);width:100%;text-align:left}
+.li:last-child{border:0}
+.li .m{flex:1;min-width:0}
+.li .m b{display:block;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li .m small{display:block;color:var(--mute);font-size:12.5px}
+.li .r{text-align:right;font-weight:800;font-size:14px;white-space:nowrap}
+.li .r small{display:block;font-weight:600;color:var(--mute);font-size:12px}
+.tag{font-family:PX;font-size:10px;padding:5px 7px;border-radius:7px;background:var(--soft);white-space:nowrap}
+.pill{font-weight:800;font-size:13px;padding:8px 12px;border-radius:10px;background:var(--ac);color:var(--on);white-space:nowrap}
+.pill.off{background:var(--soft);color:var(--ink)}
+.drop{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,var(--soft),var(--card));text-decoration:none;color:inherit}
+.drop img{width:56px;height:56px;flex:none}
+.drop p{margin:0;font-weight:800;font-size:14.5px;line-height:1.3;flex:1}.drop p small{display:block;font-weight:600;font-size:12px;color:var(--mute)}
+.drop i{font-family:PXB;font-style:normal;font-size:20px;color:var(--ac)}
+.empty{text-align:center;padding:10px 0 4px;color:var(--mute);font-size:14px}
+.empty img{width:72px;height:72px;display:block;margin:0 auto 6px}
+.money{display:flex;justify-content:space-between;text-align:center}
+.money div{flex:1;min-width:0}.money .big{font-size:19px}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mnav b{font-family:PXB;font-size:16px;font-weight:400}
+.mnav button{width:38px;height:38px;border-radius:10px;background:var(--card);box-shadow:0 3px 0 var(--sh);font-family:PXB;font-size:16px}
+.cat{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:14px}
+.cat span:first-child{width:112px}
+.cat .bar{height:12px}
+.cat span:last-child{min-width:70px;text-align:right;font-weight:800}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--nav);display:flex;justify-content:space-around;padding:10px 6px calc(env(safe-area-inset-bottom) + 10px);box-shadow:0 -1px 0 var(--line);z-index:5}
+nav button{display:flex;flex-direction:column;align-items:center;gap:5px;font-family:PX;font-size:10px;color:var(--mute);min-width:56px}
+nav button svg{width:24px;height:24px}
+nav button.on{color:var(--ac)}
+.sheet-bg{position:fixed;inset:0;background:rgba(20,10,20,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.sheet{background:var(--bg);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom) + 20px);max-height:92dvh;overflow:auto;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px)}}
+.f{display:block;margin-bottom:12px}
+.f>span{display:block;font-size:13px;color:var(--mute);margin-bottom:5px}
+.f input,.f select,.f textarea{width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:16px;outline:none;min-width:0}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--ac)}
+.f textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-family:PX;font-size:12px;padding:10px 0;border-radius:10px;background:var(--card);box-shadow:0 3px 0 var(--sh);flex:1;min-width:40px}
+.chips button.on{background:var(--ac);color:var(--on);box-shadow:0 3px 0 var(--acd)}
+.seg{display:flex;background:var(--card);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px;box-shadow:0 3px 0 var(--sh)}
+.seg button{flex:1;padding:10px;border-radius:9px;font-weight:800;font-size:14px}
+.seg button.on{background:var(--ac);color:var(--on)}
+.pick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.pick button{background:var(--card);border-radius:14px;padding:8px 4px 6px;box-shadow:0 3px 0 var(--sh);font-family:PX;font-size:11px;border:3px solid transparent}
+.pick button img{width:100%;max-width:72px;display:block;margin:0 auto 2px}
+.pick button.on{border-color:var(--ac)}
+.acts{display:flex;gap:10px;margin-top:6px}
+.danger{color:var(--live)!important}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 92px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-weight:800;font-size:14px;z-index:40;max-width:90vw;text-align:center;animation:fade .2s}
+.cele{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,8,20,.85);color:#fff;text-align:center;animation:fade .2s;padding:20px}
+.cele img{width:168px;height:168px;animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.3)}}
+.cele b{font-family:PXB;font-size:30px;margin-top:14px;font-weight:400}
+.cele p{margin:6px 0 0;font-size:16px;opacity:.9}
+.cf{position:fixed;width:10px;height:10px;top:-12px;z-index:31;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.welcome{text-align:center;padding-top:20px}
+.welcome .crew{display:flex;justify-content:center;gap:6px;margin:18px 0 10px}
+.welcome .crew img{width:76px;height:76px;animation:bob 1.6s steps(2) infinite}
+.welcome .crew img:nth-child(2){animation-delay:.4s}.welcome .crew img:nth-child(3){animation-delay:.8s}.welcome .crew img:nth-child(4){animation-delay:1.2s}
+.welcome .logo{font-size:30px}
+.install{display:flex;gap:10px;align-items:center;font-size:13.5px;line-height:1.35}
+.install svg{width:26px;height:26px;flex:none}
+.note{font-size:12.5px;color:var(--mute);line-height:1.4;margin:8px 0 0}
+a{color:var(--ac)}
+.hide{display:none!important}
+</style>
+</head>
+<body data-c="mochi">
+<div class="wrap" id="app"></div>
+<nav id="nav"></nav>
+<script>
+"use strict";
+const KEY = "streamday-v1";
+const SHOP = "https://www.etsy.com/shop/CozyPixelKits?ref=streamday";
+const CHARS = {
+  mochi:{name:"Mochi", kind:"cat", theme:"#FFF2F4", line:"Let's get cozy ☕", hype:"Purr-fect! You're ready!", sleepy:"Zzz... stream soon?"},
+  maple:{name:"Maple", kind:"fox", theme:"#1D1A2F", line:"Keep the fire going 🔥", hype:"Let's light it up!", sleepy:"The campfire misses you..."},
+  pip:{name:"Pip", kind:"frog", theme:"#EEF7E8", line:"Hop to it! 🐸", hype:"Ribbit! All set!", sleepy:"Pip is napping on a lily pad..."},
+  cocoa:{name:"Cocoa", kind:"deer", theme:"#FBF1E1", line:"Cozy stream time 🎄", hype:"Sleigh bells ready!", sleepy:"Cocoa is snoozing by the fire..."}
+};
+const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DAY2 = ["SU","MO","TU","WE","TH","FR","SA"];
+const IN_CATS = ["Subs","Bits / Cheers","Ads","Tips / Donations","Sponsorships","Affiliate links","Merch","Other"];
+const OUT_CATS = ["Gear","Software","Games","Art & emotes","Internet","Other"];
+const PRESETS = {
+  "twitch-aff":{name:"Road to Affiliate", sub:"Twitch Affiliate · rolling 30 days", items:[["Followers","f",25],["Minutes live","min",240],["Stream days","days",4],["Avg viewers","avg",3]]},
+  "twitch-partner":{name:"Path to Partner", sub:"Twitch Partner path · rolling 30 days", items:[["Hours live","hrs",25],["Stream days","days",12],["Avg viewers","avg",75]]},
+  "youtube":{name:"YouTube Partner", sub:"YouTube Partner Program (long-form)", items:[["Subscribers","f",1000],["Watch hours","wh",4000]]},
+  "none":{name:"My goals", sub:"Your own goals only", items:[]}
+};
+const DEFAULT_CHECK = ["Mic & audio check","Title & category set","Water & snacks","Post \"going live\" on Discord / socials","Overlay & alerts test","Do Not Disturb on"];
+
+/* ---------- pixel icons ---------- */
+const PIX = {
+  today:["000000000","011111110","010000010","010110010","010111010","010110010","010000010","011111110","000000000"],
+  week:["010000010","111111111","100000001","111111111","101010101","100000001","101010101","100000001","111111111"],
+  goals:["111111111","111111111","011111110","011111110","001111100","000111000","000010000","000111000","001111100"],
+  raids:["000000000","011000110","111101111","111111111","111111111","011111110","001111100","000111000","000010000"],
+  money:["001111100","011000110","110010011","100111001","100010001","100111001","110010011","011000110","001111100"],
+  gear:["000010000","011010110","011111110","001101100","111000111","001101100","011111110","011010110","000010000"],
+  check:["000000000","000000001","000000011","000000110","100001100","110011000","011110000","001100000","000000000"],
+  plus:["000010000","000010000","000010000","000010000","111111111","000010000","000010000","000010000","000010000"],
+  cal:["010000010","111111111","100000001","111111111","100000001","100010001","100111001","100010001","111111111"],
+  phone:["011111110","010000010","010000010","010000010","010000010","010000010","010000010","010010010","011111110"]
+};
+function pix(n){const g=PIX[n];let r="";g.forEach((row,y)=>{for(let x=0;x<9;x++)if(row[x]==="1")r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`});return `<svg viewBox="0 0 9 9" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;}
+
+/* ---------- state ---------- */
+const uid = () => Math.random().toString(36).slice(2,9);
+function fresh(){return {v:1, setup:false, char:"mochi", name:"", platform:"Twitch", currency:"$", schedule:[], checklist:DEFAULT_CHECK.map(t=>({id:uid(),t,done:false})), checkDay:"", live:null, sessions:[], followers:0, extraStats:{wh:0}, preset:"twitch-aff", goals:[], raids:[], raidedBy:[], money:[], taxPct:25};}
+let S;
+try{S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){S = fresh();}
+function save(){try{localStorage.setItem(KEY, JSON.stringify(S));}catch(e){toast("Couldn't save. Is storage full or private mode on?");}}
+let view = "today", monthOff = 0, editCheck = false;
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const ymd = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseYmd = s => {const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+function fmtTime(t){if(!t)return "";let [h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return h+(m?":"+pad(m):"")+" "+ap;}
+function fmtShort(t){if(!t)return "";let [h,m]=t.split(":").map(Number);const ap=h>=12?"p":"a";h=h%12||12;return h+(m?":"+pad(m):"")+ap;}
+function fmtMins(m){m=Math.round(m||0);const h=Math.floor(m/60),r=m%60;return h?h+"h"+(r?" "+r+"m":""):r+"m";}
+function money(v){const n=Math.abs(v);return (v<0?"-":"")+S.currency+n.toLocaleString("en-US",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
+const dayDiff = (a,b) => Math.round((parseYmd(ymd(a))-parseYmd(ymd(b)))/864e5);
+function ago(s){const d=dayDiff(new Date(),parseYmd(s));return d<=0?"today":d===1?"yesterday":d+" days ago";}
+function img(kind){return `img/${S.char}_${kind}.png`;}
+function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),2600);}
+
+function resetChecklistIfNewDay(){const t=ymd(new Date());if(S.checkDay!==t){S.checklist.forEach(c=>c.done=false);S.checkDay=t;save();}}
+
+function nextSlot(from=new Date()){
+  let best=null;
+  for(const s of S.schedule){
+    const [h,m]=s.t.split(":").map(Number);
+    for(let i=0;i<8;i++){
+      const d=new Date(from);d.setDate(d.getDate()+i);
+      if(d.getDay()!==s.d)continue;
+      d.setHours(h,m,0,0);
+      if(d>from-60*60*1000*0 && d>=from){if(!best||d<best.at)best={at:d,s};break;}
+    }
+  }
+  return best;
+}
+function streamedOn(day){return S.sessions.some(x=>ymd(new Date(x.start))===day);}
+function streak(){
+  if(!S.sessions.length)return 0;
+  if(!S.schedule.length){ // consecutive weeks with a stream
+    let n=0;const now=new Date();
+    for(let w=0;w<104;w++){
+      const end=new Date(now);end.setDate(end.getDate()-7*w);const start=new Date(end);start.setDate(start.getDate()-7);
+      if(S.sessions.some(x=>x.start>start&&x.start<=end))n++;else if(w>0)break;
+    }
+    return n;
+  }
+  const days=new Set(S.schedule.map(s=>s.d));let n=0;const d=new Date();
+  for(let i=0;i<365;i++){
+    const k=ymd(d);
+    if(days.has(d.getDay())){
+      if(streamedOn(k))n++;
+      else if(i>0||new Date().getHours()>=23)break; // today's slot still open
+    }else if(streamedOn(k))n++;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function last30(){const cut=Date.now()-30*864e5;return S.sessions.filter(x=>x.start>=cut);}
+function stat(key){
+  const L=last30();
+  if(key==="f")return S.followers;
+  if(key==="min")return L.reduce((a,x)=>a+(x.mins||0),0);
+  if(key==="hrs")return Math.floor(L.reduce((a,x)=>a+(x.mins||0),0)/60*10)/10;
+  if(key==="days")return new Set(L.map(x=>ymd(new Date(x.start)))).size;
+  if(key==="avg"){const v=L.filter(x=>x.avg>0);return v.length?Math.round(v.reduce((a,x)=>a+x.avg,0)/v.length*10)/10:0;}
+  if(key==="wh")return S.extraStats.wh||0;
+  return 0;
+}
+function mood(){
+  if(S.live)return "hype";
+  const done=S.checklist.length&&S.checklist.every(c=>c.done);
+  if(done)return "hype";
+  const last=S.sessions.length?Math.max(...S.sessions.map(x=>x.start)):0;
+  if(last&&Date.now()-last>7*864e5)return "sleepy";
+  return "happy";
+}
+function bar(cur,target){const f=Math.max(0,Math.min(10,Math.floor(cur/target*10+1e-9)));let r="";for(let i=0;i<10;i++)r+=`<i class="${i<f?"fl":""}"></i>`;return `<div class="bar">${r}</div>`;}
+
+/* ---------- render ---------- */
+function setTheme(){document.body.dataset.c=S.char;document.querySelector('meta[name=theme-color]').content=CHARS[S.char].theme;}
+function render(){
+  setTheme();
+  if(!S.setup){$("#nav").classList.add("hide");$("#app").innerHTML=welcome();return;}
+  resetChecklistIfNewDay();
+  $("#nav").classList.remove("hide");
+  $("#nav").innerHTML=[["today","Today"],["week","Week"],["goals","Goals"],["raids","Raids"],["money","Money"]].map(([k,l])=>`<button data-go="${k}" class="${view===k?"on":""}">${pix(k)}${l}</button>`).join("");
+  const body={today,week,goals,raids,money:moneyView}[view]();
+  $("#app").innerHTML=`<div class="top"><div class="logo">STREAM DAY</div><button class="iconbtn" data-act="settings" aria-label="Settings">${pix("gear")}</button></div>${installCard()}${body}`;
+  if(S.live)tick();
+}
+
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+let deferredPrompt=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;if(S.setup&&view==="today")render();});
+function installCard(){
+  if(standalone||view!=="today"||S.hideInstall)return "";
+  if(deferredPrompt)return `<div class="card install">${pix("phone")}<div style="flex:1">Put Stream Day on your home screen. It works offline.</div><button class="btn sm" data-act="install">Install</button></div>`;
+  if(isIOS)return `<div class="card install">${pix("phone")}<div style="flex:1">Add to Home Screen: tap <b>Share</b> <span aria-hidden="true">⬆︎</span> in Safari, then <b>Add to Home Screen</b>.</div><button class="tag" data-act="hideInstall">OK</button></div>`;
+  return "";
+}
+
+function welcome(){
+  const c=S.char;
+  return `<div class="welcome">
+  <div class="crew">${["mochi","maple","pip","cocoa"].map(k=>`<img class="px" src="img/${k}_happy.png" alt="">`).join("")}</div>
+  <div class="logo">STREAM DAY</div>
+  <p class="sub" style="margin:6px 0 20px">Your cozy go-live buddy. Private, offline, no account.</p></div>
+  <div class="card"><h4>PICK YOUR BUDDY</h4><div class="pick">${Object.entries(CHARS).map(([k,v])=>`<button data-pick="${k}" class="${c===k?"on":""}"><img class="px" src="img/${k}_happy.png" alt="">${v.name}</button>`).join("")}</div>
+  <label class="f"><span>Your channel name</span><input id="w_name" placeholder="e.g. cozyquinn" value="${esc(S.name)}" autocomplete="off"></label>
+  <label class="f"><span>Where do you stream?</span><select id="w_plat">${["Twitch","YouTube","Kick","TikTok","Other"].map(p=>`<option ${S.platform===p?"selected":""}>${p}</option>`).join("")}</select></label>
+  <div class="f"><span>Stream days (you can change this later)</span><div class="chips" id="w_days">${DAY2.map((d,i)=>`<button data-wday="${i}" class="${(S._wd||[]).includes(i)?"on":""}">${d}</button>`).join("")}</div></div>
+  <label class="f"><span>Usual start time</span><input id="w_time" type="time" value="${S._wt||"20:00"}"></label>
+  <button class="btn go" data-act="start">START</button></div>`;
+}
+
+function today(){
+  const c=CHARS[S.char],m=mood(),nx=nextSlot();
+  let line=c.line,small="Add your stream days in Week to see a countdown.";
+  if(S.live){line="You're LIVE! Have fun 🎉";small="I'll keep the timer running.";}
+  else if(m==="hype"){line=c.hype;small=nx?whenText(nx):"Checklist complete!";}
+  else if(m==="sleepy"){line=c.sleepy;small=nx?whenText(nx):"No stream planned yet.";}
+  else if(nx){line=countdown(nx.at)+"<br>"+c.line;small=whenText(nx);}
+  const done=S.checklist.filter(x=>x.done).length;
+  const mon=new Date();mon.setDate(1);mon.setHours(0,0,0,0);
+  const monthMins=S.sessions.filter(x=>x.start>=+mon).reduce((a,x)=>a+(x.mins||0),0);
+  return `<div class="card hero"><img class="px buddy" src="${img(m)}" alt="${c.name}"><div class="bub">${line}<small>${small}</small></div></div>
+  ${S.live?liveBox():""}
+  <div class="card"><h4><span>GO-LIVE CHECKLIST · ${done}/${S.checklist.length}</span><button data-act="editCheck">${editCheck?"Done":"Edit"}</button></h4>
+   ${S.checklist.length?S.checklist.map(x=>editCheck?`<div class="ck"><input value="${esc(x.t)}" data-ckedit="${x.id}" style="flex:1;border:0;background:transparent;font-weight:800;font-size:15px;outline:none;min-width:0"><button class="tag danger" data-ckdel="${x.id}">Remove</button></div>`:`<button class="ck ${x.done?"d":""}" data-ck="${x.id}"><span class="box">${pix("check")}</span><span class="t">${esc(x.t)}</span></button>`).join(""):`<p class="empty">No steps yet.</p>`}
+   ${editCheck?`<button class="btn ghost sm" data-act="ckadd" style="margin-top:10px">${pix("plus").replace("<svg","<svg width=14 height=14")} Add a step</button>`:""}
+  </div>
+  ${S.live?"":`<button class="btn go" data-act="golive" style="margin-bottom:14px">▶ GO LIVE</button>`}
+  <div class="row"><div class="card stat"><span class="big">${streak()}</span><span class="lbl">stream streak</span></div><div class="card stat"><span class="big">${fmtMins(monthMins)}</span><span class="lbl">live this month</span></div></div>
+  ${shopCard()}`;
+}
+function countdown(at){const ms=at-Date.now();const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);if(ms<6e4)return "It's stream time!";if(h>=48)return "Next stream in "+Math.round(h/24)+" days";return "Live in "+(h?h+"h ":"")+m+"m!";}
+function whenText(nx){const d=nx.at,t=new Date();const diff=dayDiff(d,t);const day=diff===0?"Tonight":diff===1?"Tomorrow":DAYS[d.getDay()];const label=diff===0&&d.getHours()<17?"Today":day;return label+" "+fmtTime(nx.s.t)+(nx.s.g?" · "+esc(nx.s.g):"");}
+function liveBox(){return `<div class="card livebox"><div><span class="dot"></span><b style="font-family:PX">LIVE</b></div><div class="timer" id="timer">0:00:00</div><p class="sub" style="margin-bottom:14px">Started ${new Date(S.live.start).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</p><button class="btn live" data-act="endlive">■ END STREAM</button></div>`;}
+let tickT=null;
+function tick(){clearTimeout(tickT);const el=$("#timer");if(!el||!S.live)return;const s=Math.floor((Date.now()-S.live.start)/1000);el.textContent=Math.floor(s/3600)+":"+pad(Math.floor(s%3600/60))+":"+pad(s%60);tickT=setTimeout(tick,1000);}
+
+function shopCard(){
+  const others=Object.keys(CHARS).filter(k=>k!==S.char);
+  const k=others[new Date().getDate()%others.length],c=CHARS[k];
+  const msg={mochi:"Meet Mochi the cat",maple:"Meet Maple the fox",pip:"Meet Pip the frog",cocoa:"New: Cocoa the deer 🎄"}[k];
+  return `<a class="card drop" href="${SHOP}" target="_blank" rel="noopener"><img class="px" src="img/${k}_e_hype.png" alt=""><p>${msg}<small>PNGTubers, emotes &amp; sub badges from CozyPixelKits</small></p><i>→</i></a>`;
+}
+
+function week(){
+  const t=new Date(),sun=new Date(t);sun.setDate(t.getDate()-t.getDay());
+  const strip=DAY2.map((d,i)=>{const day=new Date(sun);day.setDate(sun.getDate()+i);const sl=S.schedule.filter(s=>s.d===i).sort((a,b)=>a.t<b.t?-1:1)[0];const k=ymd(day);return `<div class="${sl?"l":""} ${streamedOn(k)?"done":""} ${k===ymd(t)?"td":""}">${d}<b>${sl?fmtShort(sl.t):streamedOn(k)?"✓":""}</b></div>`}).join("");
+  const sched=[...S.schedule].sort((a,b)=>a.d-b.d||(a.t<b.t?-1:1));
+  const log=[...S.sessions].sort((a,b)=>b.start-a.start).slice(0,25);
+  return `<div class="card"><h4>THIS WEEK</h4><div class="wk">${strip}</div><p class="note">Filled = planned · outlined = streamed</p></div>
+  <div class="card"><h4><span>MY SCHEDULE</span><button data-act="slotadd">+ Add</button></h4>
+   ${sched.length?sched.map(s=>`<button class="li" data-slot="${s.id}"><span class="tag">${DAYS[s.d].toUpperCase()}</span><span class="m"><b>${fmtTime(s.t)}</b><small>${esc(s.g||"Any game")}${s.len?" · "+fmtMins(s.len):""}</small></span><span class="r">›</span></button>`).join(""):`<div class="empty"><img class="px" src="${img("happy")}" alt="">Add the days you stream. I'll count down for you.</div>`}
+   ${sched.length?`<button class="btn ghost" data-act="cal" style="margin-top:10px">${pix("cal").replace("<svg","<svg width=18 height=18")} Add schedule to my calendar</button>`:""}
+  </div>
+  <div class="card"><h4><span>STREAM LOG</span><button data-act="logpast">+ Log a stream</button></h4>
+   ${log.length?log.map(x=>{const d=new Date(x.start);return `<button class="li" data-sess="${x.id}"><span class="tag">${DAYS[d.getDay()].toUpperCase()} ${d.getMonth()+1}/${d.getDate()}</span><span class="m"><b>${esc(x.g||"Stream")}</b><small>${fmtMins(x.mins)}${x.avg?" · "+x.avg+" avg viewers":""}${x.nf?" · +"+x.nf+" followers":""}</small></span><span class="r">›</span></button>`}).join(""):`<p class="empty">Tap GO LIVE on Today, or log a past stream here.</p>`}
+  </div>`;
+}
+
+function goals(){
+  const p=PRESETS[S.preset]||PRESETS["twitch-aff"];
+  let pres="";
+  if(p.items.length){
+    const allOk=p.items.every(([l,k,t])=>stat(k)>=t);
+    pres=`<div class="card"><div class="aff"><img class="px" src="img/${S.char}_e_${allOk?"gg":"hype"}.png" alt=""><p>${p.name}<small>${allOk?"You hit every number! 🎉":p.sub}</small></p></div>
+    ${p.items.map(([l,k,t])=>{const v=stat(k);return `<div class="gl ${v>=t?"ok":""}"><b>${l}</b>${bar(v,t)}<span>${(+v).toLocaleString("en-US")}/${t.toLocaleString("en-US")}</span></div>`}).join("")}
+    <div class="acts"><button class="btn ghost sm" data-act="followers" style="flex:1">Update ${S.preset==="youtube"?"subs":"followers"}</button>${S.preset==="youtube"?`<button class="btn ghost sm" data-act="watchhours" style="flex:1">Update watch hours</button>`:""}</div>
+    <p class="note">${S.preset==="youtube"?"Enter the numbers from YouTube Studio.":"Minutes, days and viewers come from your stream log. Followers you update yourself."} Always check your official dashboard. Requirements can change.</p></div>`;
+  }
+  return `<div class="seg">${[["twitch-aff","Affiliate"],["twitch-partner","Partner"],["youtube","YouTube"],["none","Custom"]].map(([k,l])=>`<button data-preset="${k}" class="${S.preset===k?"on":""}">${l}</button>`).join("")}</div>
+  ${pres}
+  <div class="card"><h4><span>MY GOALS</span><button data-act="goaladd">+ Add</button></h4>
+   ${S.goals.length?S.goals.map(g=>`<button class="gl ${g.cur>=g.target?"ok":""}" data-goal="${g.id}" style="width:100%;text-align:left"><b>${esc(g.name)}</b>${bar(g.cur,g.target)}<span>${g.cur}/${g.target}</span></button>`).join(""):`<p class="empty">Add your own: 100 followers, first raid, new overlay...</p>`}
+  </div>
+  ${shopCard()}`;
+}
+
+function raids(){
+  const list=[...S.raids].sort((a,b)=>(a.last||"0")<(b.last||"0")?-1:1);
+  const by=[...S.raidedBy].sort((a,b)=>a.date<b.date?1:-1).slice(0,30);
+  return `<div class="card"><h4><span>RAID LIST</span><button data-act="raidadd">+ Add</button></h4>
+   ${list.length?`<p class="note" style="margin:0 0 4px">Longest since your last raid comes first.</p>`+list.map(r=>`<div class="li"><button class="m" data-raid="${r.id}" style="text-align:left"><b>${esc(r.name)}</b><small>${esc([r.plat,r.cat,r.when].filter(Boolean).join(" · "))}${r.last?" · raided "+ago(r.last):" · not raided yet"}</small></button><button class="pill" data-raided="${r.id}">Raided</button></div>`).join(""):`<div class="empty"><img class="px" src="img/${S.char}_e_love.png" alt="">Keep your streamer friends here. Raid the ones you haven't raided in a while.</div>`}
+  </div>
+  <div class="card"><h4><span>THEY RAIDED ME</span><button data-act="byadd">+ Log</button></h4>
+   ${by.length?by.map(r=>`<div class="li"><button class="m" data-by="${r.id}" style="text-align:left"><b>${esc(r.name)}</b><small>${ago(r.date)}${r.v?" · "+r.v+" viewers":""}</small></button><button class="pill ${r.thx?"":"off"}" data-thx="${r.id}">${r.thx?"Thanked ✓":"Say thanks"}</button></div>`).join(""):`<p class="empty">Log raids you receive so you can return the love.</p>`}
+  </div>`;
+}
+
+function moneyView(){
+  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+monthOff);
+  const key=d.getFullYear()+"-"+pad(d.getMonth()+1);
+  const L=S.money.filter(x=>x.date.slice(0,7)===key).sort((a,b)=>a.date<b.date?1:-1);
+  const inn=L.filter(x=>x.type==="in").reduce((a,x)=>a+x.amt,0),out=L.filter(x=>x.type==="out").reduce((a,x)=>a+x.amt,0),net=inn-out;
+  const Y=S.money.filter(x=>x.date.slice(0,4)===String(d.getFullYear()));
+  const yNet=Y.reduce((a,x)=>a+(x.type==="in"?x.amt:-x.amt),0);
+  const cats={};L.filter(x=>x.type==="in").forEach(x=>cats[x.cat]=(cats[x.cat]||0)+x.amt);
+  const mx=Math.max(1,...Object.values(cats));
+  return `<div class="mnav"><button data-month="-1">‹</button><b>${d.toLocaleDateString("en-US",{month:"long",year:"numeric"}).toUpperCase()}</b><button data-month="1">›</button></div>
+  <div class="card"><div class="money"><div><span class="big">${money(inn)}</span><span class="lbl">earned</span></div><div><span class="big" style="color:var(--mute)">${money(out)}</span><span class="lbl">spent</span></div><div><span class="big">${money(net)}</span><span class="lbl">profit</span></div></div>
+  ${net>0&&S.taxPct?`<p class="note" style="text-align:center">Set aside about <b>${money(Math.round(net*S.taxPct/100))}</b> for taxes (${S.taxPct}% · <button data-act="tax" style="color:var(--ac);font-weight:800">change</button>). Rough estimate, not tax advice.</p>`:""}</div>
+  ${Object.keys(cats).length?`<div class="card"><h4>WHERE IT CAME FROM</h4>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="cat"><span>${esc(k)}</span>${bar(v,mx)}<span>${money(v)}</span></div>`).join("")}</div>`:""}
+  <div class="card"><h4><span>ENTRIES</span><button data-act="moneyadd">+ Add</button></h4>
+   ${L.length?L.map(x=>`<button class="li" data-money="${x.id}"><span class="tag">${x.date.slice(5).replace("-","/")}</span><span class="m"><b>${esc(x.cat)}</b><small>${esc(x.note||(x.type==="in"?"Income":"Expense"))}</small></span><span class="r" style="color:${x.type==="in"?"var(--ac)":"var(--mute)"}">${x.type==="in"?"+":"-"}${money(x.amt)}</span></button>`).join(""):`<div class="empty"><img class="px" src="img/${S.char}_e_sip.png" alt="">Log payouts, tips and sponsors. Gear and software too.</div>`}
+  </div>
+  <div class="card"><div class="li" style="border:0;padding:0"><span class="m"><b>${d.getFullYear()} so far</b><small>${Y.length} entries</small></span><span class="r">${money(yNet)}<small>profit</small></span></div><button class="btn ghost sm" data-act="csv" style="width:100%;margin-top:12px">Export ${d.getFullYear()} as CSV</button></div>`;
+}
+
+/* ---------- sheets ---------- */
+function openSheet(html){closeSheet();const bg=document.createElement("div");bg.className="sheet-bg";bg.id="sheet";bg.innerHTML=`<div class="sheet">${html}</div>`;bg.addEventListener("click",e=>{if(e.target===bg)closeSheet();});document.body.appendChild(bg);}
+function closeSheet(){const s=$("#sheet");if(s)s.remove();}
+const val = id => {const e=document.getElementById(id);return e?e.value.trim():"";};
+const num = id => {const v=parseFloat(val(id).replace(/[^0-9.\-]/g,""));return isNaN(v)?0:v;};
+
+function slotSheet(s){
+  s=s||{id:"",d:new Date().getDay(),t:"20:00",g:"",len:120};
+  openSheet(`<h2>${s.id?"Edit":"Add"} stream slot</h2><p class="sub" style="margin-bottom:14px">Repeats every week.</p>
+  <div class="f"><span>Day</span><div class="chips" id="s_d">${DAY2.map((d,i)=>`<button data-sday="${i}" class="${s.d===i?"on":""}">${d}</button>`).join("")}</div></div>
+  <div class="two"><label class="f"><span>Start time</span><input id="s_t" type="time" value="${s.t}"></label><label class="f"><span>Length (minutes)</span><input id="s_len" inputmode="numeric" value="${s.len||""}"></label></div>
+  <label class="f"><span>Game or category (optional)</span><input id="s_g" value="${esc(s.g)}" placeholder="e.g. Stardew Valley"></label>
+  <div class="acts">${s.id?`<button class="btn ghost" data-act="slotdel" data-id="${s.id}" style="flex:1"><span class="danger">Delete</span></button>`:""}<button class="btn" data-act="slotsave" data-id="${s.id}" style="flex:2">Save</button></div>`);
+}
+function sessSheet(x,fromLive){
+  const now=new Date();
+  x=x||{id:"",start:fromLive?S.live.start:now.getTime()-2*36e5,mins:fromLive?Math.max(1,Math.round((Date.now()-S.live.start)/6e4)):120,avg:"",peak:"",nf:"",g:(nextSlot(new Date(Date.now()-6*36e5))||{s:{}}).s.g||"",note:""};
+  const d=new Date(x.start);
+  openSheet(`<h2>${fromLive?"GG! Log this stream":x.id?"Edit stream":"Log a stream"}</h2><p class="sub" style="margin-bottom:14px">${fromLive?"Check your dashboard for viewers and new followers.":"Numbers are optional."}</p>
+  <div class="two"><label class="f"><span>Date</span><input id="x_d" type="date" value="${ymd(d)}"></label><label class="f"><span>Start</span><input id="x_t" type="time" value="${pad(d.getHours())}:${pad(d.getMinutes())}"></label></div>
+  <div class="two"><label class="f"><span>Minutes live</span><input id="x_m" inputmode="numeric" value="${x.mins}"></label><label class="f"><span>Game / category</span><input id="x_g" value="${esc(x.g)}"></label></div>
+  <div class="three"><label class="f"><span>Avg viewers</span><input id="x_a" inputmode="decimal" value="${x.avg||""}"></label><label class="f"><span>Peak</span><input id="x_p" inputmode="numeric" value="${x.peak||""}"></label><label class="f"><span>New follows</span><input id="x_n" inputmode="numeric" value="${x.nf||""}"></label></div>
+  <label class="f"><span>Notes (what worked, what to fix)</span><textarea id="x_note">${esc(x.note)}</textarea></label>
+  <div class="acts">${x.id?`<button class="btn ghost" data-act="sessdel" data-id="${x.id}" style="flex:1"><span class="danger">Delete</span></button>`:fromLive?`<button class="btn ghost" data-act="discardlive" style="flex:1">Discard</button>`:""}<button class="btn" data-act="sesssave" data-id="${x.id}" data-live="${fromLive?1:""}" style="flex:2">Save</button></div>`);
+}
+function goalSheet(g){
+  g=g||{id:"",name:"",cur:0,target:100};
+  openSheet(`<h2>${g.id?"Edit":"New"} goal</h2><p class="sub" style="margin-bottom:14px">Anything you want to grow.</p>
+  <label class="f"><span>Goal</span><input id="g_n" value="${esc(g.name)}" placeholder="e.g. Discord members"></label>
+  <div class="two"><label class="f"><span>Now</span><input id="g_c" inputmode="decimal" value="${g.cur}"></label><label class="f"><span>Target</span><input id="g_t" inputmode="decimal" value="${g.target}"></label></div>
+  <div class="acts">${g.id?`<button class="btn ghost" data-act="goaldel" data-id="${g.id}" style="flex:1"><span class="danger">Delete</span></button>`:""}<button class="btn" data-act="goalsave" data-id="${g.id}" style="flex:2">Save</button></div>`);
+}
+function raidSheet(r){
+  r=r||{id:"",name:"",plat:S.platform,cat:"",when:"",note:""};
+  openSheet(`<h2>${r.id?"Edit":"Add"} streamer</h2><p class="sub" style="margin-bottom:14px">Someone you like to raid.</p>
+  <label class="f"><span>Channel name</span><input id="r_n" value="${esc(r.name)}" autocomplete="off"></label>
+  <div class="two"><label class="f"><span>Platform</span><select id="r_p">${["Twitch","YouTube","Kick","TikTok","Other"].map(p=>`<option ${r.plat===p?"selected":""}>${p}</option>`).join("")}</select></label><label class="f"><span>Category</span><input id="r_c" value="${esc(r.cat)}" placeholder="cozy games"></label></div>
+  <label class="f"><span>Usually live</span><input id="r_w" value="${esc(r.when)}" placeholder="Tue & Thu evenings"></label>
+  <label class="f"><span>Notes</span><textarea id="r_note">${esc(r.note)}</textarea></label>
+  ${r.id&&r.hist&&r.hist.length?`<p class="note">Raided ${r.hist.length} time${r.hist.length>1?"s":""}. Last: ${ago(r.last)}. <button data-act="raidundo" data-id="${r.id}" style="color:var(--ac);font-weight:800">Undo last</button></p>`:""}
+  <div class="acts">${r.id?`<button class="btn ghost" data-act="raiddel" data-id="${r.id}" style="flex:1"><span class="danger">Delete</span></button>`:""}<button class="btn" data-act="raidsave" data-id="${r.id}" style="flex:2">Save</button></div>`);
+}
+function bySheet(r){
+  r=r||{id:"",name:"",date:ymd(new Date()),v:""};
+  openSheet(`<h2>${r.id?"Edit":"Log"} incoming raid</h2><p class="sub" style="margin-bottom:14px">Who brought their community over?</p>
+  <label class="f"><span>Channel name</span><input id="b_n" value="${esc(r.name)}" autocomplete="off"></label>
+  <div class="two"><label class="f"><span>Date</span><input id="b_d" type="date" value="${r.date}"></label><label class="f"><span>Viewers</span><input id="b_v" inputmode="numeric" value="${r.v||""}"></label></div>
+  <label class="f" style="display:flex;gap:10px;align-items:center"><input id="b_add" type="checkbox" style="width:22px;height:22px" ${r.id?"":"checked"}><span style="margin:0">Add them to my raid list</span></label>
+  <div class="acts">${r.id?`<button class="btn ghost" data-act="bydel" data-id="${r.id}" style="flex:1"><span class="danger">Delete</span></button>`:""}<button class="btn" data-act="bysave" data-id="${r.id}" style="flex:2">Save</button></div>`);
+}
+function moneySheet(x){
+  x=x||{id:"",type:"in",cat:"Subs",amt:"",date:ymd(new Date()),note:""};
+  openSheet(`<h2>${x.id?"Edit":"Add"} entry</h2>
+  <div class="seg" style="margin-top:12px"><button data-mtype="in" class="${x.type==="in"?"on":""}">Income</button><button data-mtype="out" class="${x.type==="out"?"on":""}">Expense</button></div>
+  <input type="hidden" id="m_type" value="${x.type}">
+  <div class="two"><label class="f"><span>Amount (${esc(S.currency)})</span><input id="m_a" inputmode="decimal" value="${x.amt}" placeholder="0.00"></label><label class="f"><span>Date</span><input id="m_d" type="date" value="${x.date}"></label></div>
+  <label class="f"><span>Category</span><select id="m_c">${(x.type==="in"?IN_CATS:OUT_CATS).map(c=>`<option ${x.cat===c?"selected":""}>${c}</option>`).join("")}</select></label>
+  <label class="f"><span>Note</span><input id="m_n" value="${esc(x.note)}" placeholder="e.g. Twitch payout, new mic"></label>
+  <div class="acts">${x.id?`<button class="btn ghost" data-act="moneydel" data-id="${x.id}" style="flex:1"><span class="danger">Delete</span></button>`:""}<button class="btn" data-act="moneysave" data-id="${x.id}" style="flex:2">Save</button></div>`);
+}
+function settingsSheet(){
+  openSheet(`<h2>Settings</h2><p class="sub" style="margin-bottom:14px">Everything stays on this device.</p>
+  <h4>BUDDY & THEME</h4><div class="pick">${Object.entries(CHARS).map(([k,v])=>`<button data-theme="${k}" class="${S.char===k?"on":""}"><img class="px" src="img/${k}_happy.png" alt="">${v.name}</button>`).join("")}</div>
+  <div class="two"><label class="f"><span>Channel name</span><input id="st_n" value="${esc(S.name)}"></label><label class="f"><span>Platform</span><select id="st_p">${["Twitch","YouTube","Kick","TikTok","Other"].map(p=>`<option ${S.platform===p?"selected":""}>${p}</option>`).join("")}</select></label></div>
+  <div class="two"><label class="f"><span>Currency symbol</span><input id="st_c" value="${esc(S.currency)}" maxlength="3"></label><label class="f"><span>Tax set-aside %</span><input id="st_t" inputmode="numeric" value="${S.taxPct}"></label></div>
+  <button class="btn" data-act="stsave" style="margin-bottom:18px">Save</button>
+  <h4>BACKUP</h4><p class="note" style="margin:0 0 10px">Your data lives only in this browser. Save a backup now and then, or to move to a new phone.</p>
+  <div class="acts" style="margin-bottom:18px"><button class="btn ghost sm" data-act="backup" style="flex:1">Save backup</button><label class="btn ghost sm" style="flex:1">Restore<input type="file" id="restore" accept=".json,application/json" class="hide"></label></div>
+  <a class="card drop" href="${SHOP}" target="_blank" rel="noopener"><img class="px" src="img/${S.char}_e_love.png" alt=""><p>More from CozyPixelKits<small>PNGTubers, emotes &amp; sub badges</small></p><i>→</i></a>
+  <button class="btn ghost sm" data-act="reset" style="width:100%"><span class="danger">Erase all data</span></button>
+  <p class="note" style="text-align:center;margin-top:14px">Stream Day v1.0 · made by CozyPixelKits<br>Not affiliated with Twitch, YouTube or Kick.</p>`);
+}
+
+/* ---------- actions ---------- */
+function celebrate(kind,title,sub){
+  const el=document.createElement("div");el.className="cele";el.innerHTML=`<img class="px" src="img/${S.char}_e_${kind}.png" alt=""><b>${title}</b><p>${sub}</p>`;
+  el.onclick=()=>el.remove();document.body.appendChild(el);
+  const cols=["#F0668A","#FF8A3D","#4FA03E","#F2B630","#6FA8FF","#fff"];
+  for(let i=0;i<40;i++){const c=document.createElement("i");c.className="cf";c.style.left=Math.random()*100+"vw";c.style.background=cols[i%cols.length];c.style.animationDuration=(1.4+Math.random()*1.4)+"s";c.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),3600);}
+  setTimeout(()=>el.remove(),2800);
+}
+function download(name,text,type){
+  const blob=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+}
+function calEvents(){return S.schedule.map(s=>[s.d,s.t.replace(":",""),s.len||120,(s.g||"")].join(","));}
+function icsFrom(recs,name){
+  const now=new Date(),st=now.toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
+  const BY=["SU","MO","TU","WE","TH","FR","SA"];
+  const ev=recs.map((r,i)=>{const [d,t,len,...g]=r.split(",");const game=g.join(",");const start=new Date();start.setHours(+t.slice(0,2),+t.slice(2),0,0);while(start.getDay()!==+d||start<now)start.setDate(start.getDate()+1);const end=new Date(start.getTime()+(+len)*6e4);const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00";
+    return ["BEGIN:VEVENT","UID:streamday-"+i+"-"+d+t+"@cozypixelkits","DTSTAMP:"+st,"DTSTART:"+f(start),"DTEND:"+f(end),"RRULE:FREQ=WEEKLY;BYDAY="+BY[+d],"SUMMARY:🔴 Stream"+(name?" · "+name:"")+(game?" · "+game:""),"DESCRIPTION:Open Stream Day and run your go-live checklist.","BEGIN:VALARM","TRIGGER:-PT30M","ACTION:DISPLAY","DESCRIPTION:Stream in 30 minutes","END:VALARM","END:VEVENT"].join("\r\n")});
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//CozyPixelKits//Stream Day//EN","CALSCALE:GREGORIAN",...ev,"END:VCALENDAR"].join("\r\n");
+}
+function csv(year){
+  const rows=[["Date","Type","Category","Amount","Note"]];
+  S.money.filter(x=>x.date.startsWith(year)).sort((a,b)=>a.date<b.date?-1:1).forEach(x=>rows.push([x.date,x.type==="in"?"Income":"Expense",x.cat,(x.type==="in"?1:-1)*x.amt,x.note||""]));
+  return rows.map(r=>r.map(v=>{v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(",")).join("\n");
+}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-go],[data-act],[data-ck],[data-ckdel],[data-pick],[data-wday],[data-sday],[data-slot],[data-sess],[data-preset],[data-goal],[data-raid],[data-raided],[data-by],[data-thx],[data-month],[data-money],[data-mtype],[data-theme]");
+  if(!t)return;
+  const D=t.dataset;
+  if(D.go){view=D.go;editCheck=false;render();scrollTo(0,0);return;}
+  if(D.ck){const c=S.checklist.find(x=>x.id===D.ck);c.done=!c.done;save();const all=S.checklist.every(x=>x.done);render();if(c.done&&all)celebrate("hype","READY!","Checklist done. Go have fun.");return;}
+  if(D.ckdel){S.checklist=S.checklist.filter(x=>x.id!==D.ckdel);save();render();return;}
+  if(D.pick){S.char=D.pick;keepWelcome();render();return;}
+  if(D.wday!==undefined){keepWelcome();const i=+D.wday;S._wd=S._wd||[];S._wd=S._wd.includes(i)?S._wd.filter(x=>x!==i):[...S._wd,i];render();return;}
+  if(D.sday!==undefined){document.querySelectorAll("[data-sday]").forEach(b=>b.classList.toggle("on",b===t));return;}
+  if(D.slot){slotSheet(S.schedule.find(x=>x.id===D.slot));return;}
+  if(D.sess){sessSheet(S.sessions.find(x=>x.id===D.sess));return;}
+  if(D.preset){S.preset=D.preset;save();render();return;}
+  if(D.goal){goalSheet(S.goals.find(x=>x.id===D.goal));return;}
+  if(D.raid){raidSheet(S.raids.find(x=>x.id===D.raid));return;}
+  if(D.raided){const r=S.raids.find(x=>x.id===D.raided);r.hist=r.hist||[];const d=ymd(new Date());r.hist.push(d);r.last=d;save();render();toast("Raid logged for "+r.name+" 💜");return;}
+  if(D.by){bySheet(S.raidedBy.find(x=>x.id===D.by));return;}
+  if(D.thx){const r=S.raidedBy.find(x=>x.id===D.thx);r.thx=!r.thx;save();render();return;}
+  if(D.month){monthOff+=+D.month;render();return;}
+  if(D.money){moneySheet(S.money.find(x=>x.id===D.money));return;}
+  if(D.mtype){const cur={id:t.closest(".sheet").querySelector("[data-act=moneysave]").dataset.id,type:D.mtype,cat:D.mtype==="in"?"Subs":"Gear",amt:val("m_a"),date:val("m_d"),note:val("m_n")};moneySheet(cur);return;}
+  if(D.theme){S.char=D.theme;save();setTheme();render();settingsSheet();return;}
+  const id=D.id;
+  switch(D.act){
+    case "start":{keepWelcome();S.name=val("w_name");S.platform=val("w_plat");const tm=S._wt||"20:00";S.schedule=(S._wd||[]).sort().map(d=>({id:uid(),d,t:tm,g:"",len:120}));delete S._wd;delete S._wt;S.setup=true;S.checkDay=ymd(new Date());save();view="today";render();break;}
+    case "settings":settingsSheet();break;
+    case "install":if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;render();});}break;
+    case "hideInstall":S.hideInstall=true;save();render();break;
+    case "editCheck":if(editCheck)syncCheckEdits();editCheck=!editCheck;render();break;
+    case "ckadd":syncCheckEdits();S.checklist.push({id:uid(),t:"New step",done:false});save();render();{const ins=document.querySelectorAll("[data-ckedit]");const last=ins[ins.length-1];if(last){last.focus();last.select();}}break;
+    case "golive":S.live={start:Date.now()};save();render();scrollTo(0,0);toast("You're live! Have a great stream 🎉");break;
+    case "endlive":sessSheet(null,true);break;
+    case "discardlive":S.live=null;save();closeSheet();render();break;
+    case "sesssave":{
+      const [y,mo,da]=(val("x_d")||ymd(new Date())).split("-").map(Number);const [h,mi]=(val("x_t")||"20:00").split(":").map(Number);
+      const o={id:id||uid(),start:new Date(y,mo-1,da,h,mi).getTime(),mins:Math.max(0,Math.round(num("x_m"))),g:val("x_g"),avg:num("x_a"),peak:num("x_p"),nf:Math.round(num("x_n")),note:val("x_note")};
+      const old=S.sessions.find(x=>x.id===id);
+      S.followers=Math.max(0,S.followers+(o.nf-(old?old.nf||0:0)));
+      if(old)Object.assign(old,o);else S.sessions.push(o);
+      const wasLive=D.live;if(wasLive)S.live=null;
+      save();closeSheet();render();
+      if(wasLive)celebrate("gg","GG!",fmtMins(o.mins)+" logged"+(o.nf?" · +"+o.nf+" followers":""));else toast("Stream saved");
+      break;}
+    case "sessdel":{const o=S.sessions.find(x=>x.id===id);if(o&&confirm("Delete this stream from your log?")){S.followers=Math.max(0,S.followers-(o.nf||0));S.sessions=S.sessions.filter(x=>x.id!==id);save();closeSheet();render();}break;}
+    case "logpast":sessSheet(null,false);break;
+    case "slotadd":slotSheet();break;
+    case "slotsave":{const on=document.querySelector("[data-sday].on");const o={id:id||uid(),d:on?+on.dataset.sday:0,t:val("s_t")||"20:00",len:Math.round(num("s_len"))||120,g:val("s_g")};const old=S.schedule.find(x=>x.id===id);if(old)Object.assign(old,o);else S.schedule.push(o);save();closeSheet();render();break;}
+    case "slotdel":S.schedule=S.schedule.filter(x=>x.id!==id);save();closeSheet();render();break;
+    case "cal":calendarSheet();break;
+    case "calios":break;
+    case "calfile":download("stream-schedule.ics",icsFrom(calEvents(),S.name),"text/calendar");closeSheet();toast("Open the file to add your schedule");break;
+    case "followers":{const lab=S.preset==="youtube"?"subscribers":"followers";const v=prompt("How many "+lab+" do you have now?",S.followers);if(v!==null&&!isNaN(parseInt(v))){S.followers=Math.max(0,parseInt(v));save();render();}break;}
+    case "watchhours":{const v=prompt("Public watch hours (last 12 months), from YouTube Studio:",S.extraStats.wh||0);if(v!==null&&!isNaN(parseFloat(v))){S.extraStats.wh=Math.max(0,parseFloat(v));save();render();}break;}
+    case "goaladd":goalSheet();break;
+    case "goalsave":{const o={id:id||uid(),name:val("g_n")||"Goal",cur:num("g_c"),target:num("g_t")||1};const old=S.goals.find(x=>x.id===id);const wasDone=old&&old.cur>=old.target;if(old)Object.assign(old,o);else S.goals.push(o);save();closeSheet();render();if(o.cur>=o.target&&!wasDone)celebrate("gg","GOAL!",esc(o.name)+" reached");break;}
+    case "goaldel":S.goals=S.goals.filter(x=>x.id!==id);save();closeSheet();render();break;
+    case "raidadd":raidSheet();break;
+    case "raidsave":{const o={id:id||uid(),name:val("r_n")||"Streamer",plat:val("r_p"),cat:val("r_c"),when:val("r_w"),note:val("r_note")};const old=S.raids.find(x=>x.id===id);if(old)Object.assign(old,o);else S.raids.push(Object.assign(o,{hist:[],last:""}));save();closeSheet();render();break;}
+    case "raiddel":if(confirm("Remove this streamer?")){S.raids=S.raids.filter(x=>x.id!==id);save();closeSheet();render();}break;
+    case "raidundo":{const r=S.raids.find(x=>x.id===id);r.hist.pop();r.last=r.hist[r.hist.length-1]||"";save();closeSheet();render();break;}
+    case "byadd":bySheet();break;
+    case "bysave":{const o={id:id||uid(),name:val("b_n")||"Streamer",date:val("b_d")||ymd(new Date()),v:Math.round(num("b_v"))};const old=S.raidedBy.find(x=>x.id===id);if(old)Object.assign(old,o);else S.raidedBy.push(Object.assign(o,{thx:false}));
+      if(document.getElementById("b_add").checked&&!S.raids.some(r=>r.name.toLowerCase()===o.name.toLowerCase()))S.raids.push({id:uid(),name:o.name,plat:S.platform,cat:"",when:"",note:"Raided me "+o.date,hist:[],last:""});
+      save();closeSheet();render();break;}
+    case "bydel":S.raidedBy=S.raidedBy.filter(x=>x.id!==id);save();closeSheet();render();break;
+    case "moneyadd":moneySheet();break;
+    case "moneysave":{const a=Math.abs(num("m_a"));if(!a){toast("Enter an amount");break;}const ty=document.querySelector("[data-mtype].on").dataset.mtype;const o={id:id||uid(),type:ty,amt:a,date:val("m_d")||ymd(new Date()),cat:val("m_c"),note:val("m_n")};const old=S.money.find(x=>x.id===id);if(old)Object.assign(old,o);else S.money.push(o);save();closeSheet();render();break;}
+    case "moneydel":S.money=S.money.filter(x=>x.id!==id);save();closeSheet();render();break;
+    case "tax":{const v=prompt("What % of profit do you want to set aside for taxes?",S.taxPct);if(v!==null&&!isNaN(parseFloat(v))){S.taxPct=Math.max(0,Math.min(60,parseFloat(v)));save();render();}break;}
+    case "csv":{const y=new Date();y.setMonth(y.getMonth()+monthOff);download("stream-income-"+y.getFullYear()+".csv",csv(String(y.getFullYear())),"text/csv");break;}
+    case "stsave":S.name=val("st_n");S.platform=val("st_p");S.currency=val("st_c")||"$";S.taxPct=Math.max(0,Math.min(60,num("st_t")));save();closeSheet();render();toast("Saved");break;
+    case "backup":download("stream-day-backup-"+ymd(new Date())+".json",JSON.stringify(S),"application/json");break;
+    case "reset":if(confirm("Erase everything in Stream Day on this device? This can't be undone.")){localStorage.removeItem(KEY);S=fresh();closeSheet();render();}break;
+  }
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="restore"){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||o.v!==1)throw 0;S=Object.assign(fresh(),o);save();closeSheet();render();toast("Backup restored");}catch(err){toast("That doesn't look like a Stream Day backup");}};r.readAsText(f);}
+  if(e.target.dataset&&e.target.dataset.ckedit)syncCheckEdits();
+  if(e.target.id==="w_time"){S._wt=e.target.value;}
+});
+function keepWelcome(){const n=document.getElementById("w_name");if(n){S.name=n.value.trim();S.platform=val("w_plat");S._wt=val("w_time")||S._wt;}}
+function syncCheckEdits(){document.querySelectorAll("[data-ckedit]").forEach(i=>{const c=S.checklist.find(x=>x.id===i.dataset.ckedit);if(c)c.t=i.value.trim()||c.t;});save();}
+function calendarSheet(){
+  const recs=calEvents();
+  const url=new URL("cal.html",location.href).href+"#"+encodeURIComponent(JSON.stringify({n:S.name,c:S.char,r:recs}));
+  if(isIOS){openSheet(`<h2>Add to your iPhone calendar</h2><ol style="padding-left:20px;line-height:1.6;margin:10px 0 16px"><li>Tap <b>Open calendar page</b>. It opens in Safari.</li><li>Tap <b>Add to Calendar</b>, then <b>Add All</b>.</li></ol><p class="note" style="margin:0 0 14px">Each stream repeats weekly with a reminder 30 minutes before.</p><a class="btn" href="${url}" target="_blank" rel="noopener">Open calendar page</a>`);}
+  else{openSheet(`<h2>Add to your calendar</h2><p class="sub" style="margin:8px 0 16px">You'll get a file. Open it and your calendar app adds every stream as a weekly event, with a reminder 30 minutes before.</p><button class="btn" data-act="calfile">Download calendar file</button><p class="note">On a computer? Import the file in Google Calendar: Settings › Import.</p>`);}
+}
+addEventListener("visibilitychange",()=>{if(!document.hidden&&S.setup){render();}});
+setInterval(()=>{if(S.setup&&view==="today"&&!$("#sheet")&&!S.live&&!editCheck&&document.activeElement.tagName!=="INPUT")render();},60000);
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js");
+render();
+</script>
+</body>
+</html>
